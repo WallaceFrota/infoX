@@ -44,7 +44,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MainCad = new javax.swing.JMenu();
         CadClient = new javax.swing.JMenuItem();
         CadOs = new javax.swing.JMenuItem();
-        Users = new javax.swing.JMenuItem();
+        cadUsers = new javax.swing.JMenuItem();
         MainRel = new javax.swing.JMenu();
         CadServices = new javax.swing.JMenuItem();
         MainHelp = new javax.swing.JMenu();
@@ -161,10 +161,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MainCad.add(CadClient);
 
         CadOs.setText("OS");
+        CadOs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CadOsActionPerformed(evt);
+            }
+        });
         MainCad.add(CadOs);
 
-        Users.setText("Usuários");
-        MainCad.add(Users);
+        cadUsers.setText("Usuários");
+        cadUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cadUsersActionPerformed(evt);
+            }
+        });
+        MainCad.add(cadUsers);
 
         Menu.add(MainCad);
 
@@ -222,7 +232,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void CadClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CadClientActionPerformed
-        // TODO add your handling code here:
+        // chamada da tela de clientes
+        TelaCliente cliente = new TelaCliente();
+        cliente.setVisible(true);
     }//GEN-LAST:event_CadClientActionPerformed
 
     private void OptionsCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OptionsCloseActionPerformed
@@ -239,6 +251,18 @@ public class TelaPrincipal extends javax.swing.JFrame {
         TelaSobre sobre = new TelaSobre();
         sobre.setVisible(true);
     }//GEN-LAST:event_HelpAboutActionPerformed
+
+    private void cadUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadUsersActionPerformed
+        // chamada da tela de usuário
+        TelaUsuario usuario = new TelaUsuario();
+        usuario.setVisible(true);
+    }//GEN-LAST:event_cadUsersActionPerformed
+
+    private void CadOsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CadOsActionPerformed
+        // chamada da tela de OS
+        TelaOS os = new TelaOS();
+        os.setVisible(true);
+    }//GEN-LAST:event_CadOsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -286,7 +310,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu MainRel;
     private javax.swing.JMenuBar Menu;
     private javax.swing.JMenuItem OptionsClose;
-    private javax.swing.JMenuItem Users;
+    private javax.swing.JMenuItem cadUsers;
     private javax.swing.JLabel icon;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
