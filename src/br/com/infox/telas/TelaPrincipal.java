@@ -8,19 +8,23 @@ package br.com.infox.telas;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JOptionPane;
+import br.com.infox.dal.ModuloConexao;
+import java.sql.*;
 
 /**
  *
  * @author SAMSUNG
  */
 public class TelaPrincipal extends javax.swing.JFrame {
-
-    /**
-     * Creates new form TelaPrincipal
-     */
+    Connection conexao = null;
+    // variáveis especiais de apoio a conexão
+    PreparedStatement pst = null;
+    // objeto matriz que recebe o resultado do comando sql
+    ResultSet rs = null;
     public TelaPrincipal() {
         initComponents();
-        
+       
+        // exibe caixa de confirmação
         // data atual
         String data = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
         // setando data no label
@@ -46,7 +50,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
         CadOs = new javax.swing.JMenuItem();
         cadUsers = new javax.swing.JMenuItem();
         MainRel = new javax.swing.JMenu();
-        CadServices = new javax.swing.JMenuItem();
+        relClientes = new javax.swing.JMenuItem();
+        relServices = new javax.swing.JMenuItem();
+        relOS = new javax.swing.JMenuItem();
         MainHelp = new javax.swing.JMenu();
         HelpAbout = new javax.swing.JMenuItem();
         MainOptions = new javax.swing.JMenu();
@@ -179,9 +185,35 @@ public class TelaPrincipal extends javax.swing.JFrame {
         Menu.add(MainCad);
 
         MainRel.setText("Relatório");
+        MainRel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MainRelActionPerformed(evt);
+            }
+        });
 
-        CadServices.setText("Serviços");
-        MainRel.add(CadServices);
+        relClientes.setText("Clientes");
+        relClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relClientesActionPerformed(evt);
+            }
+        });
+        MainRel.add(relClientes);
+
+        relServices.setText("Serviços");
+        relServices.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relServicesActionPerformed(evt);
+            }
+        });
+        MainRel.add(relServices);
+
+        relOS.setText("OS");
+        relOS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relOSActionPerformed(evt);
+            }
+        });
+        MainRel.add(relOS);
 
         Menu.add(MainRel);
 
@@ -263,35 +295,140 @@ public class TelaPrincipal extends javax.swing.JFrame {
         TelaOS os = new TelaOS();
         os.setVisible(true);
     }//GEN-LAST:event_CadOsActionPerformed
+    // emite relatórios de serviços
+    private void relServicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relServicesActionPerformed
+
+        // exibe caixa de confirmação
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatório.", "Atenção!", JOptionPane.YES_NO_OPTION);
+        
+        if(confirma == JOptionPane.YES_OPTION)  {
+            String sql = " SELECT O.os, O.equipamento, O.defeito, O.servico, O.tecnico, O.valor, C.nomecli, C.fonecli " +
+                         " FROM tbos as O " +
+                         " INNER JOIN tbclientes as C " +
+                         " ON (O.idcli = C.idcli) ";
+            
+            // imprime relatório servicos
+            try {
+                // abre conexão
+                conexao = ModuloConexao.conector();
+                // prepara execução do sql
+                pst = conexao.prepareStatement(sql);
+                // executa comando select
+                rs = pst.executeQuery();
+                    // se encontrou algo no banco
+                    while (rs.next()) {
+                        String equipamento = rs.getString("equipamento");
+                        String defeito = rs.getString("defeito");
+                        String servico = rs.getString("servico");
+                        String tecnico = rs.getString("tecnico");
+                        int valor = rs.getInt("valor");
+                        String nome = rs.getString("nomecli");
+                        int fone = rs.getInt("fonecli");
+                        System.out.println(
+                                " Equipamento: " + equipamento + " || " +
+                                " Defeito: " + defeito + " || " +
+                                " Servico: "+ servico + " || " +
+                                " Técnico: " + tecnico + " || " +
+                                " Valor: " + valor + " || " +
+                                " Nome: " + nome + " || " +
+                                " Telefone: " + fone);
+                        System.out.println();
+                    }
+                    // fechar a conexão com o BD
+                    conexao.close();
+            }catch(Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                return;
+            }  
+        }
+    }//GEN-LAST:event_relServicesActionPerformed
+
+    private void MainRelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MainRelActionPerformed
+        
+    }//GEN-LAST:event_MainRelActionPerformed
+    
+    // emite relatório de clientes
+    private void relClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relClientesActionPerformed
+
+        // exibe caixa de confirmação
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatório.", "Atenção!", JOptionPane.YES_NO_OPTION);
+        
+        if(confirma == JOptionPane.YES_OPTION)  {
+            String sql = "SELECT * FROM tbclientes";
+            // imprime relatório de clientes
+            try {
+                // abre conexão
+                conexao = ModuloConexao.conector();
+                // prepara execução do sql
+                pst = conexao.prepareStatement(sql);
+                // executa comando select
+                rs = pst.executeQuery();
+                    // se encontrou algo no banco
+                    while (rs.next()) {
+                        String nome = rs.getString(2);
+                        String endereco = rs.getString(3);
+                        int fone = rs.getInt(4);
+                        String email = rs.getString(5);
+                        System.out.println("Nome: " + nome + " Endereço: " + endereco + " Telefone: "+ fone + " E-mail: " + email);
+                        System.out.println();
+                    }
+                     
+                    // fechar a conexão com o BD
+                    conexao.close();
+            }catch(Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                return;
+            }  
+        }
+    }//GEN-LAST:event_relClientesActionPerformed
+    // emite relatório de os
+    private void relOSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relOSActionPerformed
+
+        // exibe caixa de confirmação
+        int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão deste relatório.", "Atenção!", JOptionPane.YES_NO_OPTION);
+        
+        if(confirma == JOptionPane.YES_OPTION)  {
+            String sql = "SELECT * FROM tbos ORDER BY data_os DESC";
+            // imprime relatório de OS's
+            try {
+                // abre conexão
+                conexao = ModuloConexao.conector();
+                // prepara execução do sql
+                pst = conexao.prepareStatement(sql);
+                // executa comando select
+                rs = pst.executeQuery();
+                    // se encontrou algo no banco
+                    while (rs.next()) {
+                        int os = rs.getInt("os");
+                        String equipamento = rs.getString("equipamento");
+                        String defeito = rs.getString("defeito");
+                        String servico = rs.getString("servico");
+                        String tecnico = rs.getString("tecnico");
+                        int valor = rs.getInt("valor");
+                        int idcli = rs.getInt("idcli");
+                        System.out.println(
+                                " OS: " + os + " || " +
+                                " Equipamento: " + equipamento + " || " +
+                                " Defeito: " + defeito + " || " +
+                                " Servico: "+ servico + " || " +
+                                " Técnico: " + tecnico + " || " +
+                                " Valor: " + valor + " || " +
+                                " ID cliente: " + idcli);
+                        System.out.println();
+                    }
+                    // fechar a conexão com o BD
+                    conexao.close();
+            }catch(Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+                return;
+            }  
+        }
+    }//GEN-LAST:event_relOSActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new TelaPrincipal().setVisible(true);
@@ -302,7 +439,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem CadClient;
     private javax.swing.JMenuItem CadOs;
-    private javax.swing.JMenuItem CadServices;
     private javax.swing.JMenuItem HelpAbout;
     private javax.swing.JMenu MainCad;
     private javax.swing.JMenu MainHelp;
@@ -320,5 +456,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblDate;
+    private javax.swing.JMenuItem relClientes;
+    private javax.swing.JMenuItem relOS;
+    private javax.swing.JMenuItem relServices;
     // End of variables declaration//GEN-END:variables
 }
